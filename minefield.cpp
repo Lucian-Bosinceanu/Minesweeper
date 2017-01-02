@@ -25,7 +25,7 @@ for (i=0;i<MAX_MINE;i++)
 
 mine_field create_field(short nrLines, short nrColumns, short nrMines)
 {
-int i, j;
+short int i, j, dir, adjacentMines;
 mine_field F;
 field_position P;
 clear_field(F);
@@ -52,6 +52,19 @@ while (i<nrMines)
          ++i;
         }
     }
+
+for (i=1;i<=nrLines;i++)
+    for (j=1;j<=nrColumns;j++)
+         if (F.backField[i][j]==EMPTY)
+            {
+            adjacentMines=0;
+            for (dir=1;dir<=8;dir++)
+                if ( F.backField[ i+linDir[dir] ][ j+colDir[dir] ]==MINE )
+                    adjacentMines++;
+            F.backField[i][j]=adjacentMines;
+            }
+
+
 return F;
 }
 
@@ -120,7 +133,7 @@ void field_reveal(mine_field& F, field_position FP)
 {
 int dir;
 field_position new_FP;
-if (F.backField[FP.lin][FP.col]==MINE)
+if (F.backField[FP.lin][FP.col]==MINE || F.backField[FP.lin][FP.col]==BORDER)
     return;
 F.frontField[FP.lin][FP.col]=REVEALED;
 if (F.backField[FP.lin][FP.col]!=EMPTY)
