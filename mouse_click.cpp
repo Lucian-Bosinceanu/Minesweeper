@@ -10,9 +10,9 @@ if ( ismouseclick(WM_RBUTTONDOWN) )
     return RIGHT_CLICK;
 }
 
-absolute_point get_mouseClick_postion(char click_type)
+click_position get_mouseClick_postion(char click_type)
 {
-absolute_point mouseClick;
+click_position mouseClick;
 int lx, ly;
 int rx, ry;
 mouseClick.X=0;
