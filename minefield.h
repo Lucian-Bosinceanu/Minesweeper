@@ -1,5 +1,6 @@
 #include <cstdlib>
 #include <ctime>
+#include "button.h"
 
 #define MAX_LIN 100
 #define MAX_COL 100
@@ -12,7 +13,9 @@
 #define FLAGGED -1
 #define REVEALED 1
 #define HIDDEN 0
-#define EXPLODED 2
+#define EXPLODED_MINE 2
+#define FALSE_FLAG 3
+#define REVEALED_MINE 4
 
 #define LEFT_CLICK 1
 #define RIGHT_CLICK 2
@@ -41,12 +44,17 @@ struct mine_field{
     char frontField[MAX_LIN][MAX_COL];
 
     field_position minePositions[MAX_MINE];
+
+    relative_rectangle fieldBox;
 };
+
 
 void clear_field(mine_field& F);
 
 mine_field create_field(short nrLines, short nrColumns, short nrMines);
 
+bool is_mine_field_click(mine_field F, click_position mouseClick);
+field_position get_field_position(mine_field F, click_position click);
 char field_click_effect(mine_field F, field_position FP, char clickType);
 bool solve_click_effect(mine_field& F, field_position FP, char clickEffect);
 
@@ -56,4 +64,9 @@ bool field_chord(mine_field& F, field_position FP);
 void place_flag(mine_field& F, field_position flagPosition);
 void remove_flag(mine_field& F, field_position flagPosition);
 
-void explode_mines(mine_field& F);
+void reveal_mines(mine_field& F);
+void mark_false_flags(mine_field& F);
+
+void draw_field(mine_field& F);
+
+bool is_solved_correctly(mine_field F);

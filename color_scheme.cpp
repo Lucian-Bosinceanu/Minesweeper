@@ -1,13 +1,16 @@
 #include "color_scheme.h"
+#include "fstream"
+
+using namespace std;
 
 color_scheme return_default_color_scheme()
 {
 color_scheme CS;
 
-CS.backgroundColor=create_color(255,255,255);
-CS.mainColor=create_color(40,100,60);
-CS.secondaryColor=create_color(0,0,0);
-CS.tertiaryColor=create_color(0,0,200);
+CS.backgroundColor=create_color(255,255,255); //alb
+CS.mainColor=create_color(40,100,60); //verde
+CS.secondaryColor=create_color(0,0,0); //negru
+CS.tertiaryColor=create_color(196,196,196); //gri
 
 return CS;
 }
@@ -46,20 +49,34 @@ return newColor;
 color_scheme defaultCS=return_default_color_scheme();
 
 
-void set_active_color_scheme(unsigned char index)
+/*void set_active_color_scheme(unsigned char index)
 {
 activeCS=index;
-}
+}*/
 
 void set_active_color(rgb_color activeC)
 {
 setcolor( COLOR(activeC.R, activeC.G, activeC.B) );
 }
 
-void upload_all_color_schemes(color_scheme CS[]);
+int return_rgb_color_code(rgb_color C)
+{
+return COLOR(C.R, C.G, C.B);
+}
+
+/*void upload_all_color_schemes(color_scheme CS[]);
 {
 CS[0]=defaultCS;
 CS[1]=defaultCS;
 CS[2]=defaultCS;
 CS[3]=defaultCS;
+}*/
+
+color_scheme load_current_color_scheme()
+{
+int index;
+ifstream fin ("color_scheme.txt");
+fin>>index;
+if (index==1)
+    return return_default_color_scheme();
 }

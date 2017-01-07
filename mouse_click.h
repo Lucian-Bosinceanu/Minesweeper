@@ -1,5 +1,6 @@
 //#include "relative_coordinates.h"
 #include <graphics.h>
+#define NO_CLICK 0
 #define LEFT_CLICK 1
 #define RIGHT_CLICK 2
 #define BOTH_CLICK 3

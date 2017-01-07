@@ -2,12 +2,16 @@
 
 char get_mouseClick_type()
 {
-if (ismouseclick(WM_LBUTTONDOWN) && ismouseclick(WM_RBUTTONDOWN))
-    return BOTH_CLICK;
+char result=NO_CLICK;
+if (ismouseclick(WM_LBUTTONDOWN) && ismouseclick(WM_RBUTTONDOWN) )
+        result=BOTH_CLICK;
 if ( ismouseclick(WM_LBUTTONDOWN) )
-    return LEFT_CLICK;
+    result=LEFT_CLICK;
 if ( ismouseclick(WM_RBUTTONDOWN) )
-    return RIGHT_CLICK;
+    result=RIGHT_CLICK;
+//clearmouseclick(WM_LBUTTONDOWN);
+//clearmouseclick(WM_RBUTTONDOWN);
+return result;
 }
 
 click_position get_mouseClick_postion(char click_type)
@@ -17,6 +21,8 @@ int lx, ly;
 int rx, ry;
 mouseClick.X=0;
 mouseClick.Y=0;
+if (click_type==NO_CLICK)
+    return mouseClick;
 if (click_type==LEFT_CLICK)
     {
     getmouseclick(WM_LBUTTONDOWN,lx,ly);

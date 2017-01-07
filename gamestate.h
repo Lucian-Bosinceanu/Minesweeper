@@ -1,7 +1,7 @@
 #include "minefield.h"
-#define PENDING -1
+#define PENDING 1
 #define FAILED 0
-#define SOLVED 1
+#define SOLVED 2
 
 #define EASY 1
 #define MEDIUM 2
