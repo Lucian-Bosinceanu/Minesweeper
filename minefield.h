@@ -33,6 +33,12 @@ struct field_position{
     short int col;
 };
 
+struct nod{
+    field_position inf;
+    nod* next;
+};
+
+typedef nod* stack_list;
 
 struct mine_field{
     short int nrOfLines;
@@ -40,12 +46,14 @@ struct mine_field{
     short int nrOfMines;
     short int nrOfFlags;
 
-    char backField[MAX_LIN][MAX_COL];
-    char frontField[MAX_LIN][MAX_COL];
+    short int backField[MAX_LIN][MAX_COL];
+    short int frontField[MAX_LIN][MAX_COL];
 
     field_position minePositions[MAX_MINE];
 
-    relative_rectangle fieldBox;
+    absolute_rectangle fieldBox;
+
+    stack_list graphicalChanges;
 };
 
 
@@ -68,5 +76,10 @@ void reveal_mines(mine_field& F);
 void mark_false_flags(mine_field& F);
 
 void draw_field(mine_field& F);
+void draw_field_graphicalChanges(mine_field& F);
 
 bool is_solved_correctly(mine_field F);
+
+void push_stack_list(stack_list& SL, field_position FP);
+bool is_empty_stack_list(stack_list SL);
+field_position pop_stack_list(stack_list& SL);

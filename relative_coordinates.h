@@ -19,7 +19,7 @@ struct relative_rectangle{
 };
 
 struct absolute_rectangle{
-    absolute_point anchorPont;
+    absolute_point anchorPoint;
     short int width, height;
 };
 

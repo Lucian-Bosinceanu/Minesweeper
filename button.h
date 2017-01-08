@@ -35,13 +35,10 @@ struct button{
 
     relative_rectangle buttonBox;
     char text[MAX_SIR];
-    char buttonFunction;
 };
 
 
-button create_button(relative_rectangle rButtonBox, char content[],char function_code);
-
-void press_button(button B);
+button create_button(relative_rectangle rButtonBox, char content[]);
 
 bool is_button_pressed(button B, click_position mouseClick);
 

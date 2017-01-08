@@ -1,7 +1,8 @@
 #include "minefield.h"
 
-short int linDir[]={0,-1,-1,0,1,1,1,0,-1};
-short int colDir[]={0,0,1,1,1,0,-1,-1,-1};
+//vectorii merg mai intai in forma de plus primele 5 pozitii, apoi in forma de X ultimele 4 pozitii
+short int linDir[]={0,-1,0,1,0,-1,1,1,-1};
+short int colDir[]={0,0,1,0,-1,1,1,-1,-1};
 
 void draw_field_position(absolute_point anchorPoint,short int length, char backfieldCODE, char frontfieldCODE);
 
@@ -24,15 +25,12 @@ for (i=0;i<MAX_LIN;i++)
 for (i=0;i<MAX_MINE;i++)
      F.minePositions[i].lin=F.minePositions[i].col=EMPTY;
 
-F.fieldBox.rAnchorPoint.rX=30;
-F.fieldBox.rAnchorPoint.rY=30;
-F.fieldBox.rHeight=60;
-F.fieldBox.rWidth=absolute_to_relative_value(relative_to_absolute_value(70,AFTER_HEIGHT),AFTER_WIDTH);
+F.graphicalChanges=NULL;
 }
 
 mine_field create_field(short nrLines, short nrColumns, short nrMines)
 {
-short int i, j, dir, adjacentMines;
+short int i, j, dir, adjacentMines,field_position_size;
 mine_field F;
 field_position P;
 clear_field(F);
@@ -71,16 +69,25 @@ for (i=1;i<=nrLines;i++)
             F.backField[i][j]=adjacentMines;
             }
 
+field_position_size=relative_to_absolute_value(3,AFTER_HEIGHT);
+F.fieldBox.height=field_position_size*F.nrOfLines;
+F.fieldBox.width=field_position_size*F.nrOfColumns;
+F.fieldBox.anchorPoint.Y=relative_to_absolute_value( ( 100- absolute_to_relative_value(F.fieldBox.height,AFTER_HEIGHT) )/2,AFTER_HEIGHT);
+F.fieldBox.anchorPoint.X=relative_to_absolute_value( ( 100- absolute_to_relative_value(F.fieldBox.width,AFTER_WIDTH) )/2,AFTER_WIDTH);
+//F.fieldBox.rAnchorPoint.rY=25;
+//F.fieldBox.rHeight=70;
+//F.fieldBox.rWidth=absolute_to_relative_value(relative_to_absolute_value(60,AFTER_HEIGHT),AFTER_WIDTH);
 
 return F;
 }
 
 bool is_mine_field_click(mine_field F, click_position mouseClick)
 {
-absolute_rectangle hitBoxB;
-hitBoxB=relative_to_absolute_rectangle(F.fieldBox);
-if ( mouseClick.X>=hitBoxB.anchorPont.X && mouseClick.X<=hitBoxB.anchorPont.X+hitBoxB.width &&
-     mouseClick.Y>=hitBoxB.anchorPont.Y && mouseClick.Y<=hitBoxB.anchorPont.Y+hitBoxB.height)
+absolute_rectangle hitBoxB=F.fieldBox;
+//hitBoxB=relative_to_absolute_rectangle(F.fieldBox);
+//hitBoxB.width=hitBoxB.height;
+if ( mouseClick.X>=hitBoxB.anchorPoint.X && mouseClick.X<=hitBoxB.anchorPoint.X+hitBoxB.width &&
+     mouseClick.Y>=hitBoxB.anchorPoint.Y && mouseClick.Y<=hitBoxB.anchorPoint.Y+hitBoxB.height)
     return true;
 return false;
 }
@@ -89,13 +96,14 @@ field_position get_field_position(mine_field F, click_position click)
 {
 short int field_position_size;
 field_position clickedPosition;
-absolute_rectangle hitBoxF;
+absolute_rectangle hitBoxF=F.fieldBox;
 
-hitBoxF=relative_to_absolute_rectangle(F.fieldBox);
-field_position_size=hitBoxF.height/F.nrOfLines-hitBoxF.height%F.nrOfLines;
+//hitBoxF=relative_to_absolute_rectangle(F.fieldBox);
+field_position_size=hitBoxF.height/F.nrOfLines;
+//F.fieldBox.height=F.fieldBox.width=field_position_size*F.nrOfLines;
 
-clickedPosition.lin=(click.X - hitBoxF.anchorPont.X)/field_position_size +1;
-clickedPosition.col=(click.Y - hitBoxF.anchorPont.Y)/field_position_size +1;
+clickedPosition.lin=(click.X - hitBoxF.anchorPoint.X)/field_position_size +1;
+clickedPosition.col=(click.Y - hitBoxF.anchorPoint.Y)/field_position_size +1;
 
 return clickedPosition;
 }
@@ -105,10 +113,10 @@ char field_click_effect(mine_field F, field_position FP, char clickType)
 if ( F.frontField[ FP.lin ][ FP.col ]==REVEALED )
     return NOTHING;
 
-if ( F.backField[ FP.lin ][ FP.col ]==MINE )
+if ( F.backField[ FP.lin ][ FP.col ]==MINE && clickType==LEFT_CLICK )
     return MINE_CLICK;
 
-if (clickType==LEFT_CLICK)
+if (clickType==LEFT_CLICK && F.frontField[ FP.lin ][ FP.col ]==HIDDEN)
     return REVEAL_CLICK;
 
 if (clickType==RIGHT_CLICK && F.frontField[ FP.lin ][ FP.col ]!=FLAGGED)
@@ -137,7 +145,10 @@ if (clickEffect==NOTHING)
 
 if (clickEffect==MINE_CLICK)
     {
-    F.frontField[ FP.lin ][ FP.lin ]=EXPLODED_MINE;
+    F.frontField[ FP.lin ][ FP.col ]=EXPLODED_MINE;
+    push_stack_list(F.graphicalChanges,FP);
+    reveal_mines(F);
+    mark_false_flags(F);
     return false;
     }
 
@@ -164,9 +175,10 @@ void field_reveal(mine_field& F, field_position FP)
 {
 int dir;
 field_position new_FP;
-if (F.backField[FP.lin][FP.col]==MINE || F.backField[FP.lin][FP.col]==BORDER)
+if (F.backField[FP.lin][FP.col]==MINE || F.backField[FP.lin][FP.col]==BORDER || F.frontField[FP.lin][FP.col]==REVEALED)
     return;
 F.frontField[FP.lin][FP.col]=REVEALED;
+push_stack_list(F.graphicalChanges,FP);
 if (F.backField[FP.lin][FP.col]!=EMPTY)
     return;
 for (dir=1;dir<=8;dir++)
@@ -200,6 +212,7 @@ return true;
 void place_flag(mine_field& F, field_position flagPosition)
 {
 F.nrOfFlags++;
+push_stack_list(F.graphicalChanges,flagPosition);
 F.frontField[flagPosition.lin][flagPosition.col]=FLAGGED;
 return;
 }
@@ -207,6 +220,7 @@ return;
 void remove_flag(mine_field& F, field_position flagPosition)
 {
 F.nrOfFlags--;
+push_stack_list(F.graphicalChanges,flagPosition);
 F.frontField[flagPosition.lin][flagPosition.col]=HIDDEN;
 }
 
@@ -214,97 +228,138 @@ void reveal_mines(mine_field& F)
 {
 int i;
 for (i=0;i<F.nrOfMines;i++)
-     F.frontField[ F.minePositions[i].lin ][ F.minePositions[i].col ]=REVEALED_MINE;
+     if ( F.frontField[ F.minePositions[i].lin ][ F.minePositions[i].col ]!=EXPLODED_MINE &&
+         F.frontField[ F.minePositions[i].lin ][ F.minePositions[i].col ]!=FLAGGED )
+        {
+        F.frontField[ F.minePositions[i].lin ][ F.minePositions[i].col ]=REVEALED_MINE;
+        push_stack_list(F.graphicalChanges,F.minePositions[i]);
+        }
 return;
 }
 
 void mark_false_flags(mine_field& F)
 {
 int i,j;
+field_position FP;
 for (i=1;i<=F.nrOfLines;i++)
      for (j=1;j<=F.nrOfColumns;j++)
          if (F.frontField[i][j]==FLAGGED && F.backField[i][j]!=MINE)
-             F.frontField[i][j]=FALSE_FLAG;
+             {
+              F.frontField[i][j]=FALSE_FLAG;
+              FP.lin=i;
+              FP.col=j;
+              push_stack_list(F.graphicalChanges,FP);
+             }
 }
 
 void draw_field(mine_field& F)
 {
-int i,j,currentX,currentY;
+int i,j;
 color_scheme activeCS;
 activeCS=load_current_color_scheme();
-absolute_rectangle aFieldBox;
 absolute_point screen_position;
 short int field_position_size;
-aFieldBox=relative_to_absolute_rectangle(F.fieldBox);
-field_position_size=aFieldBox.height/F.nrOfLines-aFieldBox.height%F.nrOfLines;
+field_position_size=F.fieldBox.height/F.nrOfLines;
 
-for (i=1;i<=F.nrOfLines;i++)
-     for (j=1;j<=F.nrOfColumns;j++)
-         {
-          screen_position.X=aFieldBox.anchorPont.X+(i-1)*field_position_size;
-          screen_position.Y=aFieldBox.anchorPont.Y+(j-1)*field_position_size;
-          draw_field_position(screen_position,field_position_size,F.backField[i][j],F.frontField[i][j]);
-         }
+setfillstyle(SOLID_FILL, return_rgb_color_code(activeCS.tertiaryColor) );
+bar(F.fieldBox.anchorPoint.X,F.fieldBox.anchorPoint.Y,F.fieldBox.anchorPoint.X+F.fieldBox.width,F.fieldBox.anchorPoint.Y+F.fieldBox.height);
 
 set_active_color(activeCS.mainColor);
-setlinestyle(0,0,3);
-line(aFieldBox.anchorPont.X, aFieldBox.anchorPont.Y, aFieldBox.anchorPont.X+aFieldBox.height, aFieldBox.anchorPont.Y);
-line(aFieldBox.anchorPont.X, aFieldBox.anchorPont.Y, aFieldBox.anchorPont.X, aFieldBox.anchorPont.Y+aFieldBox.height);
-line(aFieldBox.anchorPont.X+aFieldBox.height, aFieldBox.anchorPont.Y, aFieldBox.anchorPont.X+aFieldBox.height, aFieldBox.anchorPont.Y+aFieldBox.height);
-line(aFieldBox.anchorPont.X, aFieldBox.anchorPont.Y+aFieldBox.height, aFieldBox.anchorPont.X+aFieldBox.height, aFieldBox.anchorPont.Y+aFieldBox.height);
+/*setlinestyle(0,0,3);
+line(F.fieldBox.anchorPoint.X, F.fieldBox.anchorPoint.Y, F.fieldBox.anchorPoint.X+F.fieldBox.height, F.fieldBox.anchorPoint.Y);
+line(F.fieldBox.anchorPoint.X, F.fieldBox.anchorPoint.Y, F.fieldBox.anchorPoint.X, F.fieldBox.anchorPoint.Y+F.fieldBox.height);
+line(F.fieldBox.anchorPoint.X+F.fieldBox.height, F.fieldBox.anchorPoint.Y, F.fieldBox.anchorPoint.X+F.fieldBox.height, F.fieldBox.anchorPoint.Y+F.fieldBox.height);
+line(F.fieldBox.anchorPoint.X, F.fieldBox.anchorPoint.Y+F.fieldBox.height, F.fieldBox.anchorPoint.X+F.fieldBox.height, F.fieldBox.anchorPoint.Y+F.fieldBox.height);
+*/
 
+draw_field_graphicalChanges(F);
+}
+
+void draw_field_graphicalChanges(mine_field& F)
+{
+int i;
+color_scheme activeCS;
+activeCS=load_current_color_scheme();
+short int currentX,currentY;
+absolute_point screenPosition;
+field_position currentPosition;
+short int field_position_size;
+field_position_size=F.fieldBox.height/F.nrOfLines;
+while ( F.graphicalChanges!=0 )
+        {
+         currentPosition=pop_stack_list(F.graphicalChanges);
+         screenPosition.X=F.fieldBox.anchorPoint.X+(currentPosition.lin-1)*field_position_size;
+         screenPosition.Y=F.fieldBox.anchorPoint.Y+(currentPosition.col-1)*field_position_size;
+         draw_field_position(screenPosition,field_position_size,F.backField[currentPosition.lin][currentPosition.col],F.frontField[currentPosition.lin][currentPosition.col]);
+        }
+set_active_color(activeCS.mainColor);
+/*setlinestyle(0,0,3);
+line(F.fieldBox.anchorPoint.X, F.fieldBox.anchorPoint.Y, F.fieldBox.anchorPoint.X+F.fieldBox.height, F.fieldBox.anchorPoint.Y);
+line(F.fieldBox.anchorPoint.X, F.fieldBox.anchorPoint.Y, F.fieldBox.anchorPoint.X, F.fieldBox.anchorPoint.Y+F.fieldBox.height);
+line(F.fieldBox.anchorPoint.X+F.fieldBox.height, F.fieldBox.anchorPoint.Y, F.fieldBox.anchorPoint.X+F.fieldBox.height, F.fieldBox.anchorPoint.Y+F.fieldBox.height);
+line(F.fieldBox.anchorPoint.X, F.fieldBox.anchorPoint.Y+F.fieldBox.height, F.fieldBox.anchorPoint.X+F.fieldBox.height, F.fieldBox.anchorPoint.Y+F.fieldBox.height);
+*/
 setlinestyle(0,0,1);
-currentX=aFieldBox.anchorPont.X;
-currentY=aFieldBox.anchorPont.Y;
-for (i=1;i<=F.nrOfLines;i++)
+
+currentX=F.fieldBox.anchorPoint.X;
+currentY=F.fieldBox.anchorPoint.Y;
+for (i=1;i<=F.nrOfLines+1;i++)
      {
-      line(aFieldBox.anchorPont.X,currentY,aFieldBox.height,currentY);
-      line(currentX,aFieldBox.anchorPont.Y,currentX,aFieldBox.height);
-      currentX+=field_position_size;
+      line(F.fieldBox.anchorPoint.X,currentY,F.fieldBox.anchorPoint.X+F.fieldBox.height,currentY);
       currentY+=field_position_size;
      }
+for (i=1;i<=F.nrOfColumns+1;i++)
+    {
+    line(currentX,F.fieldBox.anchorPoint.Y,currentX,F.fieldBox.anchorPoint.Y+F.fieldBox.height);
+    currentX+=field_position_size;
+    }
 }
 
 void draw_field_position(absolute_point anchorPoint,short int length, char backfieldCODE, char frontfieldCODE)
 {
 color_scheme activeCS;
 activeCS=load_current_color_scheme();
-set_active_color(activeCS.tertiaryColor);
-setfillstyle(SOLID_FILL, return_rgb_color_code(activeCS.tertiaryColor) );
+
 if (frontfieldCODE==REVEALED)
     {
-     if (backfieldCODE==EMPTY) return;
+     if (backfieldCODE==EMPTY)
+        {
+         set_active_color(activeCS.backgroundColor);
+         setfillstyle(SOLID_FILL, return_rgb_color_code(activeCS.backgroundColor) );
+         bar(anchorPoint.X,anchorPoint.Y,anchorPoint.X+length,anchorPoint.Y+length);
+        }
      if (backfieldCODE==1)
-         readimagefile("images\1.jpg",anchorPoint.X,anchorPoint.Y,anchorPoint.X+length,anchorPoint.Y+length);
+         readimagefile("1.jpg",anchorPoint.X,anchorPoint.Y,anchorPoint.X+length,anchorPoint.Y+length);
      if (backfieldCODE==2)
-         readimagefile("images\2.jpg",anchorPoint.X,anchorPoint.Y,anchorPoint.X+length,anchorPoint.Y+length);
+         readimagefile("2.jpg",anchorPoint.X,anchorPoint.Y,anchorPoint.X+length,anchorPoint.Y+length);
      if (backfieldCODE==3)
-         readimagefile("images\3.jpg",anchorPoint.X,anchorPoint.Y,anchorPoint.X+length,anchorPoint.Y+length);
+         readimagefile("3.jpg",anchorPoint.X,anchorPoint.Y,anchorPoint.X+length,anchorPoint.Y+length);
      if (backfieldCODE==4)
-         readimagefile("images\4.jpg",anchorPoint.X,anchorPoint.Y,anchorPoint.X+length,anchorPoint.Y+length);
+         readimagefile("4.jpg",anchorPoint.X,anchorPoint.Y,anchorPoint.X+length,anchorPoint.Y+length);
      if (backfieldCODE==5)
-          readimagefile("images\5.jpg",anchorPoint.X,anchorPoint.Y,anchorPoint.X+length,anchorPoint.Y+length);
+          readimagefile("5.jpg",anchorPoint.X,anchorPoint.Y,anchorPoint.X+length,anchorPoint.Y+length);
      if (backfieldCODE==6)
-          readimagefile("images\6.jpg",anchorPoint.X,anchorPoint.Y,anchorPoint.X+length,anchorPoint.Y+length);
+          readimagefile("6.jpg",anchorPoint.X,anchorPoint.Y,anchorPoint.X+length,anchorPoint.Y+length);
      if (backfieldCODE==7)
-          readimagefile("images\7.jpg",anchorPoint.X,anchorPoint.Y,anchorPoint.X+length,anchorPoint.Y+length);
+          readimagefile("7.jpg",anchorPoint.X,anchorPoint.Y,anchorPoint.X+length,anchorPoint.Y+length);
      if (backfieldCODE==8)
-          readimagefile("images\8.jpg",anchorPoint.X,anchorPoint.Y,anchorPoint.X+length,anchorPoint.Y+length);
-    return;
+          readimagefile("8.jpg",anchorPoint.X,anchorPoint.Y,anchorPoint.X+length,anchorPoint.Y+length);
     }
     else
     {
+     set_active_color(activeCS.tertiaryColor);
+     setfillstyle(SOLID_FILL, return_rgb_color_code(activeCS.tertiaryColor) );
      bar(anchorPoint.X,anchorPoint.Y,anchorPoint.X+length,anchorPoint.Y+length);
      if (frontfieldCODE==HIDDEN)
          return;
      if (frontfieldCODE==FLAGGED)
-         readimagefile("images\flag.jpg",anchorPoint.X,anchorPoint.Y,anchorPoint.X+length,anchorPoint.Y+length);
+         readimagefile("flag.jpg",anchorPoint.X,anchorPoint.Y,anchorPoint.X+length,anchorPoint.Y+length);
      if (frontfieldCODE==REVEALED_MINE)
-         readimagefile("images\mine.jpg",anchorPoint.X,anchorPoint.Y,anchorPoint.X+length,anchorPoint.Y+length);
+         readimagefile("mine.jpg",anchorPoint.X,anchorPoint.Y,anchorPoint.X+length,anchorPoint.Y+length);
      if (frontfieldCODE==FALSE_FLAG)
-         readimagefile("images\false_flag.jpg",anchorPoint.X,anchorPoint.Y,anchorPoint.X+length,anchorPoint.Y+length);
+         readimagefile("false_flag.jpg",anchorPoint.X,anchorPoint.Y,anchorPoint.X+length,anchorPoint.Y+length);
      if (frontfieldCODE==EXPLODED_MINE)
-         readimagefile("images\exploded_mine.jpg",anchorPoint.X,anchorPoint.Y,anchorPoint.X+length,anchorPoint.Y+length);
+         readimagefile("exploded_mine.jpg",anchorPoint.X,anchorPoint.Y,anchorPoint.X+length,anchorPoint.Y+length);
     }
 }
 
@@ -316,3 +371,39 @@ for (i=0;i<F.nrOfMines;i++)
          return false;
 return true;
 }
+
+void push_stack_list(stack_list& SL, field_position FP)
+{
+nod* p=new nod;
+p->inf=FP;
+p->next=SL;
+SL=p;
+}
+
+field_position pop_stack_list(stack_list& SL)
+{
+nod* p;
+field_position FP;
+if (SL->next==NULL)
+    {
+     p=SL;
+     FP=p->inf;
+     delete p;
+     SL=0;
+    }
+    else
+    {
+     p=SL;
+     FP=p->inf;
+     SL=SL->next;
+     delete p;
+    }
+
+return FP;
+}
+
+bool is_empty_stack_list(stack_list SL)
+{
+return SL==0;
+}
+

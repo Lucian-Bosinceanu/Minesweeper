@@ -167,6 +167,7 @@ draw_menu(change_resolution_menu);
 void load_play_menu(char difficulty)
 {
 char click;
+char click_effect;
 field_position clickedFieldPosition;
 play_screen playScreen;
 click_position mouseClick;
@@ -181,12 +182,18 @@ while (1)
            {
             click=get_mouseClick_type();
             mouseClick=get_mouseClick_postion(click);
+
             if ( is_mine_field_click(playScreen.gameState.gameField,mouseClick) )
                 {
                  clickedFieldPosition=get_field_position(playScreen.gameState.gameField,mouseClick);
-                 playScreen.gameState.state=solve_click_effect(playScreen.gameState.gameField, clickedFieldPosition, click);
-                 clear_screen();
-                 draw_play_screen(playScreen);
+                 click_effect=field_click_effect(playScreen.gameState.gameField, clickedFieldPosition,click);
+                 if (click_effect!=NOTHING)
+                     {
+                     playScreen.gameState.state=solve_click_effect(playScreen.gameState.gameField, clickedFieldPosition, click_effect);
+                     //clear_screen();
+                     draw_field_graphicalChanges(playScreen.gameState.gameField);
+                     //draw_play_screen(playScreen);
+                     }
                 }
             if (playScreen.gameState.gameField.nrOfMines==playScreen.gameState.gameField.nrOfFlags)
                 {
@@ -220,7 +227,7 @@ while (1)
          outtext("SOLVED!");
         }
         else
-        if (playScreen.gameState.state=FAILED)
+        if (playScreen.gameState.state==FAILED)
             {
             //altceva
             settextstyle(10,HORIZ_DIR,2);
@@ -310,90 +317,90 @@ relative_rectangle buttonR;
 
 buttonR.rAnchorPoint.rX=40; buttonR.rAnchorPoint.rY=55;
 buttonR.rHeight=10; buttonR.rWidth=20;
-play_button=create_button(buttonR,"PLAY",PLAY_GAME);
+play_button=create_button(buttonR,"PLAY");
 
 buttonR.rAnchorPoint.rX=40; buttonR.rAnchorPoint.rY=70;
 buttonR.rHeight=10; buttonR.rWidth=20;
-options_button=create_button(buttonR,"OPTIONS",OPTIONS);
+options_button=create_button(buttonR,"OPTIONS");
 
 buttonR.rAnchorPoint.rX=40; buttonR.rAnchorPoint.rY=85;
 buttonR.rHeight=10; buttonR.rWidth=20;
-exit_button=create_button(buttonR,"EXIT",EXIT_GAME);
+exit_button=create_button(buttonR,"EXIT");
 
 buttonR.rAnchorPoint.rX=30; buttonR.rAnchorPoint.rY=15;
 buttonR.rHeight=10; buttonR.rWidth=40;
-difficulty_easy_button=create_button(buttonR,"EASY (9x9, 10 MINES)",PICK_EASY_DIF);
+difficulty_easy_button=create_button(buttonR,"EASY (9x9, 10 MINES)");
 
 buttonR.rAnchorPoint.rX=30; buttonR.rAnchorPoint.rY=35;
 buttonR.rHeight=10; buttonR.rWidth=40;
-difficulty_medium_button=create_button(buttonR,"MEDIUM (16X16, 40 MINES)",PICK_MEDIUM_DIF);
+difficulty_medium_button=create_button(buttonR,"MEDIUM (16X16, 40 MINES)");
 
 buttonR.rAnchorPoint.rX=30; buttonR.rAnchorPoint.rY=55;
 buttonR.rHeight=10; buttonR.rWidth=40;
-difficulty_hard_button=create_button(buttonR,"HARD (20X20, 60 MINES)",PICK_HARD_DIF);
+difficulty_hard_button=create_button(buttonR,"HARD (20X20, 60 MINES)");
 
 buttonR.rAnchorPoint.rX=30; buttonR.rAnchorPoint.rY=75;
 buttonR.rHeight=10; buttonR.rWidth=40;
-difficulty_insane_button=create_button(buttonR,"INSANE (30X30, 100 MINES)",PICK_INSANE_DIF);
+difficulty_insane_button=create_button(buttonR,"INSANE (30X30, 100 MINES)");
 
 buttonR.rAnchorPoint.rX=40; buttonR.rAnchorPoint.rY=40;
 buttonR.rHeight=10; buttonR.rWidth=20;
-res_1920x1080_button=create_button(buttonR,"1920x1080",RES_1920X1080);
+res_1920x1080_button=create_button(buttonR,"1920x1080");
 
 buttonR.rAnchorPoint.rX=40; buttonR.rAnchorPoint.rY=40;
 buttonR.rHeight=10; buttonR.rWidth=20;
-res_1366x768_button=create_button(buttonR,"1366x768",RES_1366X768);
+res_1366x768_button=create_button(buttonR,"1366x768");
 
 buttonR.rAnchorPoint.rX=40; buttonR.rAnchorPoint.rY=40;
 buttonR.rHeight=10; buttonR.rWidth=20;
-res_1280x800_button=create_button(buttonR,"1280x800",RES_1280X800);
+res_1280x800_button=create_button(buttonR,"1280x800");
 
 buttonR.rAnchorPoint.rX=40; buttonR.rAnchorPoint.rY=40;
 buttonR.rHeight=10; buttonR.rWidth=20;
-res_1440x900_button=create_button(buttonR,"1440x900",RES_1440X900);
+res_1440x900_button=create_button(buttonR,"1440x900");
 
 buttonR.rAnchorPoint.rX=40; buttonR.rAnchorPoint.rY=40;
 buttonR.rHeight=10; buttonR.rWidth=20;
-res_1280x1024_button=create_button(buttonR,"1280x1024",RES_1280X1024);
+res_1280x1024_button=create_button(buttonR,"1280x1024");
 
 buttonR.rAnchorPoint.rX=40; buttonR.rAnchorPoint.rY=40;
 buttonR.rHeight=10; buttonR.rWidth=20;
-res_1600x900_button=create_button(buttonR,"1600x900",RES_1600X900);
+res_1600x900_button=create_button(buttonR,"1600x900");
 
 buttonR.rAnchorPoint.rX=40; buttonR.rAnchorPoint.rY=40;
 buttonR.rHeight=10; buttonR.rWidth=20;
-res_1024x768_button=create_button(buttonR,"1024x768",RES_1024X768);
+res_1024x768_button=create_button(buttonR,"1024x768");
 
 buttonR.rAnchorPoint.rX=40; buttonR.rAnchorPoint.rY=40;
 buttonR.rHeight=10; buttonR.rWidth=20;
-res_800x600_button=create_button(buttonR,"800x600",RES_800X600);
+res_800x600_button=create_button(buttonR,"800x600");
 
 buttonR.rAnchorPoint.rX=10; buttonR.rAnchorPoint.rY=10;
 buttonR.rHeight=10; buttonR.rWidth=10;
-back_button=create_button(buttonR,"BACK",BACK_BUTTON);
+back_button=create_button(buttonR,"BACK");
 
-buttonR.rAnchorPoint.rX=40; buttonR.rAnchorPoint.rY=40;
+buttonR.rAnchorPoint.rX=10; buttonR.rAnchorPoint.rY=40;
 buttonR.rHeight=10; buttonR.rWidth=10;
-reset_button=create_button(buttonR,"RESET",RESET_BUTTON);
+reset_button=create_button(buttonR,"RESET");
 
 buttonR.rAnchorPoint.rX=40; buttonR.rAnchorPoint.rY=40;
 buttonR.rHeight=10; buttonR.rWidth=20;
-pick_color_scheme1_button=create_button(buttonR,"COLOR SCHEME 1",CHANGE_COLOR_SCHEME_1);
+pick_color_scheme1_button=create_button(buttonR,"COLOR SCHEME 1");
 
 buttonR.rAnchorPoint.rX=40; buttonR.rAnchorPoint.rY=40;
 buttonR.rHeight=10; buttonR.rWidth=20;
-pick_color_scheme2_button=create_button(buttonR,"COLOR SCHEME 2",CHANGE_COLOR_SCHEME_2);
+pick_color_scheme2_button=create_button(buttonR,"COLOR SCHEME 2");
 
 buttonR.rAnchorPoint.rX=40; buttonR.rAnchorPoint.rY=40;
 buttonR.rHeight=10; buttonR.rWidth=20;
-pick_color_scheme3_button=create_button(buttonR,"COLOR SCHEME 3",CHANGE_COLOR_SCHEME_3);
+pick_color_scheme3_button=create_button(buttonR,"COLOR SCHEME 3");
 
 buttonR.rAnchorPoint.rX=30; buttonR.rAnchorPoint.rY=35;
 buttonR.rHeight=10; buttonR.rWidth=40;
-change_color_scheme_button=create_button(buttonR,"CHANGE COLOR SCHEME",CHANGE_COLOR_SCHEME_BUTTON);
+change_color_scheme_button=create_button(buttonR,"CHANGE COLOR SCHEME");
 
 buttonR.rAnchorPoint.rX=30; buttonR.rAnchorPoint.rY=55;
 buttonR.rHeight=10; buttonR.rWidth=40;
-change_resolution_button=create_button(buttonR,"CHANGE RESOLUTION",CHANGE_RES_BUTTON);
+change_resolution_button=create_button(buttonR,"CHANGE RESOLUTION");
 
 }

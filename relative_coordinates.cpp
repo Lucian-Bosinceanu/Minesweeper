@@ -70,7 +70,7 @@ absolute_rectangle relative_to_absolute_rectangle(relative_rectangle rRect)
 {
 absolute_rectangle rect;
 
-rect.anchorPont=relative_to_absolute_point(rRect.rAnchorPoint);
+rect.anchorPoint=relative_to_absolute_point(rRect.rAnchorPoint);
 rect.width=relative_to_absolute_value(rRect.rWidth, AFTER_WIDTH);
 rect.height=relative_to_absolute_value(rRect.rHeight, AFTER_HEIGHT);
 
@@ -83,7 +83,7 @@ relative_rectangle absolute_to_relative_rectangle(absolute_rectangle rect)
 {
 relative_rectangle rRect;
 
-rRect.rAnchorPoint=absolute_to_relative_point(rect.anchorPont);
+rRect.rAnchorPoint=absolute_to_relative_point(rect.anchorPoint);
 rRect.rHeight=absolute_to_relative_value(rect.height, AFTER_HEIGHT);
 rRect.rWidth=absolute_to_relative_value(rect.width, AFTER_WIDTH);
 
