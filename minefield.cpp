@@ -110,7 +110,7 @@ return clickedPosition;
 
 char field_click_effect(mine_field F, field_position FP, char clickType)
 {
-if ( F.frontField[ FP.lin ][ FP.col ]==REVEALED )
+if ( F.frontField[ FP.lin ][ FP.col ]==REVEALED && clickType!=MIDDLE_CLICK)
     return NOTHING;
 
 if ( F.backField[ FP.lin ][ FP.col ]==MINE && clickType==LEFT_CLICK )
@@ -125,7 +125,7 @@ if (clickType==RIGHT_CLICK && F.frontField[ FP.lin ][ FP.col ]!=FLAGGED)
 if (clickType==RIGHT_CLICK && F.frontField[ FP.lin ][ FP.col ]==FLAGGED)
     return REMOVE_FLAG_CLICK;
 
-if (clickType==BOTH_CLICK && F.frontField[ FP.lin ][ FP.col ]==REVEALED && F.backField[ FP.lin ][ FP.col ]!=0)
+if (clickType==MIDDLE_CLICK && F.frontField[ FP.lin ][ FP.col ]==REVEALED && F.backField[ FP.lin ][ FP.col ]!=0)
     {
      int adjacent_flags=0;
      for (int dir=1;dir<=8;dir++)
@@ -191,14 +191,24 @@ for (dir=1;dir<=8;dir++)
 bool field_chord(mine_field& F, field_position FP)
 {
 int dir;
+bool failed_chord=false;
 field_position new_FP;
 for (dir=1;dir<=8;dir++)
      if (F.backField[ FP.lin + linDir[dir] ][ FP.col + colDir[dir] ]==MINE &&
          F.frontField[ FP.lin + linDir[dir] ][ FP.col + colDir[dir] ]!=FLAGGED)
         {
          F.frontField[ FP.lin + linDir[dir] ][ FP.col + colDir[dir] ]=EXPLODED_MINE;
-         return false;
+         new_FP.lin=FP.lin + linDir[dir];
+         new_FP.col=FP.col + colDir[dir];
+         push_stack_list(F.graphicalChanges,new_FP);
+         failed_chord=true;
         }
+if (failed_chord)
+    {
+    reveal_mines(F);
+    mark_false_flags(F);
+    return false;
+    }
 for (dir=1;dir<=8;dir++)
      if (F.frontField[ FP.lin + linDir[dir] ][ FP.col + colDir[dir] ]==HIDDEN)
          {
@@ -246,6 +256,21 @@ for (i=1;i<=F.nrOfLines;i++)
          if (F.frontField[i][j]==FLAGGED && F.backField[i][j]!=MINE)
              {
               F.frontField[i][j]=FALSE_FLAG;
+              FP.lin=i;
+              FP.col=j;
+              push_stack_list(F.graphicalChanges,FP);
+             }
+}
+
+void reveal_all(mine_field& F)
+{
+int i,j;
+field_position FP;
+for (i=1;i<=F.nrOfLines;i++)
+     for (j=1;j<=F.nrOfColumns;j++)
+         if (F.frontField[i][j]==HIDDEN)
+             {
+              F.frontField[i][j]=REVEALED;
               FP.lin=i;
               FP.col=j;
               push_stack_list(F.graphicalChanges,FP);

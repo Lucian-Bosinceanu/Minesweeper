@@ -1,6 +1,7 @@
-#include "relative_coordinates.h"
+//#include "relative_coordinates.h"
 #include "mouse_click.h"
-#include "color_scheme.h"
+#include "text.h"
+//#include "color_scheme.h"
 
 #define MAX_SIR 30
 

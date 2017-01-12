@@ -1,12 +1,11 @@
 # depslib dependency file v1.0
-1483893704 source:a:\facultate\ip\proiect - minesweeper\button.cpp
+1484221718 source:a:\facultate\ip\proiect - minesweeper\button.cpp
 	"button.h"
 	<cstring>
 
-1483884982 a:\facultate\ip\proiect - minesweeper\button.h
-	"relative_coordinates.h"
+1484220355 a:\facultate\ip\proiect - minesweeper\button.h
 	"mouse_click.h"
-	"color_scheme.h"
+	"text.h"
 
 1483456981 source:a:\facultate\ip\proiect - minesweeper\drawing_functions.cpp
 	"drawing_functions.h"
@@ -21,29 +20,29 @@
 1483886468 a:\facultate\ip\proiect - minesweeper\gamescreen.h
 	"gamestate.h"
 
-1483357016 source:a:\facultate\ip\proiect - minesweeper\gamestate.cpp
+1484230144 source:a:\facultate\ip\proiect - minesweeper\gamestate.cpp
 	"gamestate.h"
 
-1483802841 a:\facultate\ip\proiect - minesweeper\gamestate.h
+1484230101 a:\facultate\ip\proiect - minesweeper\gamestate.h
 	"minefield.h"
 
-1483895336 source:a:\facultate\ip\proiect - minesweeper\main.cpp
+1484230444 source:a:\facultate\ip\proiect - minesweeper\main.cpp
 	<fstream>
 	"gamescreen.h"
 	<iostream>
 
-1483893227 a:\facultate\ip\proiect - minesweeper\minefield.h
+1484222972 a:\facultate\ip\proiect - minesweeper\minefield.h
 	<cstdlib>
 	<ctime>
 	"button.h"
 
-1483949162 source:a:\facultate\ip\proiect - minesweeper\minefield.cpp
+1484223126 source:a:\facultate\ip\proiect - minesweeper\minefield.cpp
 	"minefield.h"
 
-1483705576 source:a:\facultate\ip\proiect - minesweeper\mouse_click.cpp
+1484222432 source:a:\facultate\ip\proiect - minesweeper\mouse_click.cpp
 	"mouse_click.h"
 
-1483787115 a:\facultate\ip\proiect - minesweeper\mouse_click.h
+1484222142 a:\facultate\ip\proiect - minesweeper\mouse_click.h
 	<graphics.h>
 
 1412410578 a:\facultate\ip\proiect - minesweeper\graphics.h
@@ -51,16 +50,25 @@
 	<limits.h>
 	<sstream>
 
-1483893663 a:\facultate\ip\proiect - minesweeper\relative_coordinates.h
+1484225594 a:\facultate\ip\proiect - minesweeper\relative_coordinates.h
 	<fstream>
 
-1483893920 source:a:\facultate\ip\proiect - minesweeper\relative_coordinates.cpp
+1484226323 source:a:\facultate\ip\proiect - minesweeper\relative_coordinates.cpp
 	"relative_coordinates.h"
 
-1483796979 source:a:\facultate\ip\proiect - minesweeper\color_scheme.cpp
+1484221659 source:a:\facultate\ip\proiect - minesweeper\color_scheme.cpp
 	"color_scheme.h"
 	"fstream"
 
-1483791690 a:\facultate\ip\proiect - minesweeper\color_scheme.h
+1484133208 a:\facultate\ip\proiect - minesweeper\color_scheme.h
 	<graphics.h>
+
+1484220551 a:\facultate\ip\proiect - minesweeper\text.h
+	"relative_coordinates.h"
+	"color_scheme.h"
+	<graphics.h>
+
+1484227107 source:a:\facultate\ip\proiect - minesweeper\text.cpp
+	<cstring>
+	"text.h"
 

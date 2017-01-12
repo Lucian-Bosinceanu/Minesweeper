@@ -13,8 +13,8 @@ if (difficultyGS==MEDIUM)
     createdGameState.gameField=create_field(MEDIUM_LINES, MEDIUM_COLUMNS, MEDIUM_MINES);
 if (difficultyGS==HARD)
     createdGameState.gameField=create_field(HARD_LINES, HARD_COLUMNS, HARD_MINES);
-if (difficultyGS==INSANE)
-    createdGameState.gameField=create_field(INSANE_LINES, INSANE_COLUMNS, INSANE_MINES);
+//if (difficultyGS==INSANE)
+//    createdGameState.gameField=create_field(INSANE_LINES, INSANE_COLUMNS, INSANE_MINES);
 
 return createdGameState;
 }

@@ -6,7 +6,7 @@
 #define EASY 1
 #define MEDIUM 2
 #define HARD 3
-#define INSANE 4
+#define CUSTOM 4
 
 #define EASY_LINES 9
 #define EASY_COLUMNS 9

@@ -79,4 +79,17 @@ ifstream fin ("color_scheme.txt");
 fin>>index;
 if (index==1)
     return return_default_color_scheme();
+if (index==2)
+    return create_color_scheme( create_color(255,255,255), create_color(76,99,200), create_color(247,133,31), create_color(196,196,196) );
+if (index==3)
+    return create_color_scheme( create_color(255,255,255), create_color(245,40,40), create_color(0,178,51), create_color(196,196,196) );
+
+return return_default_color_scheme();
+}
+
+void change_global_color_scheme(int index)
+{
+ofstream fout("color_scheme.txt");
+fout<<index<<'\n';
+fout.close();
 }

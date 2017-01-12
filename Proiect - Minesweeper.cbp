@@ -45,8 +45,6 @@
 		<Unit filename="color_scheme.cpp" />
 		<Unit filename="color_scheme.h" />
 		<Unit filename="color_scheme.txt" />
-		<Unit filename="drawing_functions.cpp" />
-		<Unit filename="drawing_functions.h" />
 		<Unit filename="gamescreen.cpp" />
 		<Unit filename="gamescreen.h" />
 		<Unit filename="gamestate.cpp" />
@@ -59,6 +57,8 @@
 		<Unit filename="relative_coordinates.cpp" />
 		<Unit filename="relative_coordinates.h" />
 		<Unit filename="resolution.txt" />
+		<Unit filename="text.cpp" />
+		<Unit filename="text.h" />
 		<Extensions>
 			<code_completion />
 			<envvars />

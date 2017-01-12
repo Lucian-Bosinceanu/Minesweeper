@@ -90,3 +90,34 @@ rRect.rWidth=absolute_to_relative_value(rect.width, AFTER_WIDTH);
 return rRect;
 }
 
+void set_new_screen_resolution(short int width, short int height)
+{
+ofstream fout("resolution.txt");
+fout<<width<<' '<<height<<'\n';
+fout.close();
+}
+
+void resolution_to_text(short int width, short int height,char sir[])
+{
+short int X,Y,position=0,i;
+X=width; Y=height;
+while (Y!=0)
+    {
+    sir[position++]=Y%10+'0';
+    Y/=10;
+    }
+sir[position++]=' ';
+
+while (X!=0)
+    {
+    sir[position++]=X%10+'0';
+    X/=10;
+    }
+for (i=0;i<position/2;i++)
+    {
+     sir[i]=sir[i]^sir[position-i-1];
+     sir[position-i-1]=sir[i]^sir[position-i-1];
+     sir[i]=sir[i]^sir[position-i-1];
+    }
+sir[position]=0;
+}

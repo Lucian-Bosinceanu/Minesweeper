@@ -54,7 +54,7 @@ for (;i>=0;i--)
 
 //setbkcolor(WHITE);
 setbkcolor(return_rgb_color_code(activeCS.mainColor));
-set_active_color(activeCS.backgroundColor);
+set_active_color(activeCS.secondaryColor);
 moveto(buttonBorder.anchorPoint.X + ( buttonBorder.width-textwidth(B.text) )/2, buttonBorder.anchorPoint.Y + ( buttonBorder.height-textheight(B.text) )/2 );
 outtext(B.text);
 }

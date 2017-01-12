@@ -74,6 +74,7 @@ void remove_flag(mine_field& F, field_position flagPosition);
 
 void reveal_mines(mine_field& F);
 void mark_false_flags(mine_field& F);
+void reveal_all(mine_field& F);
 
 void draw_field(mine_field& F);
 void draw_field_graphicalChanges(mine_field& F);

@@ -18,6 +18,7 @@ color_scheme return_default_color_scheme();
 
 color_scheme create_color_scheme(rgb_color bkC, rgb_color mC, rgb_color sC, rgb_color tC);
 
+void change_global_color_scheme(int index);
 color_scheme load_current_color_scheme();
 
 void switch_color_scheme(color_scheme& currentCS, color_scheme desiredCS);

@@ -31,3 +31,6 @@ relative_point absolute_to_relative_point(absolute_point P);
 
 absolute_rectangle relative_to_absolute_rectangle(relative_rectangle rRect);
 relative_rectangle absolute_to_relative_rectangle(absolute_rectangle rect);
+
+void set_new_screen_resolution(short int width, short int height);
+void resolution_to_text(short int width, short int height, char sir[]);

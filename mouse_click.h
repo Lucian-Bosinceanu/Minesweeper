@@ -4,6 +4,7 @@
 #define LEFT_CLICK 1
 #define RIGHT_CLICK 2
 #define BOTH_CLICK 3
+#define MIDDLE_CLICK 4
 
 struct click_position{
     short int X,Y;
