@@ -1,10 +1,9 @@
 #include <cstdlib>
-#include <ctime>
 #include "button.h"
 
 #define MAX_LIN 100
 #define MAX_COL 100
-#define MAX_MINE 100
+#define MAX_MINE 300
 
 #define MINE -1
 #define EMPTY 0
@@ -29,8 +28,8 @@
 #define CHORD_CLICK 5
 
 struct field_position{
-    short int lin;
-    short int col;
+    char lin;
+    char col;
 };
 
 struct nod{
@@ -46,8 +45,8 @@ struct mine_field{
     short int nrOfMines;
     short int nrOfFlags;
 
-    short int backField[MAX_LIN][MAX_COL];
-    short int frontField[MAX_LIN][MAX_COL];
+    char backField[MAX_LIN][MAX_COL];
+    char frontField[MAX_LIN][MAX_COL];
 
     field_position minePositions[MAX_MINE];
 

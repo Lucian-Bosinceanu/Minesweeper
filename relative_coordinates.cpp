@@ -28,6 +28,18 @@ ifstream fin("resolution.txt");
 fin>>MAXX>>MAXY;
 
 if (dimension_code==AFTER_WIDTH)
+    {
+     if (position>MAXX || position<0)
+         return -1;
+    }
+    else
+    if (dimension_code==AFTER_HEIGHT)
+        {
+        if (position>MAXY || position<0)
+            return -1;
+        }
+
+if (dimension_code==AFTER_WIDTH)
     percent=(100*position)/MAXX;
     else
     if (dimension_code==AFTER_HEIGHT)

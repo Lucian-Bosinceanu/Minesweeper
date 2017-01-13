@@ -18,7 +18,7 @@ for (i=4;i>=0;i--)
          break;
     }
 
-for (;i>=0;i--)
+for (;i>=1;i--)
     {
      settextstyle(10,HORIZ_DIR,i);
      if ( textwidth(T.charString)<=aTextBox.width )
@@ -51,10 +51,16 @@ return T;
 void draw_text(text T)
 {
 color_scheme activeCS;
+absolute_rectangle aTextBox;
 activeCS=load_current_color_scheme();
 
 setbkcolor(return_rgb_color_code(activeCS.backgroundColor));
-set_active_color(activeCS.mainColor);
+//set_active_color(activeCS.mainColor);
+setfillstyle(SOLID_FILL, return_rgb_color_code(activeCS.backgroundColor) );
+
+aTextBox=relative_to_absolute_rectangle(T.rTextBox);
+bar(aTextBox.anchorPoint.X,aTextBox.anchorPoint.Y,aTextBox.anchorPoint.X+aTextBox.width,aTextBox.anchorPoint.Y+aTextBox.height);
+
 settextstyle(10,HORIZ_DIR,T.textSize);
 moveto(T.drawingPoint.X, T.drawingPoint.Y);
 outtext(T.charString);

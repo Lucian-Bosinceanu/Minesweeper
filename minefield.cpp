@@ -1,4 +1,5 @@
 #include "minefield.h"
+#include <ctime>
 
 //vectorii merg mai intai in forma de plus primele 5 pozitii, apoi in forma de X ultimele 4 pozitii
 short int linDir[]={0,-1,0,1,0,-1,1,1,-1};
@@ -44,7 +45,6 @@ for (i=0,j=0;i<=nrLines+1;i++)
 for (i=0,j=0;j<=nrColumns+1;j++)
      F.backField[i][j]=F.backField[nrLines+1][j]=BORDER;
 
-srand( time(NULL) );
 i=0;
 while (i<nrMines)
     {
@@ -70,10 +70,15 @@ for (i=1;i<=nrLines;i++)
             }
 
 field_position_size=relative_to_absolute_value(3,AFTER_HEIGHT);
+if (nrLines>30)
+    field_position_size=relative_to_absolute_value(2,AFTER_HEIGHT);
+if (nrLines>45)
+    field_position_size=relative_to_absolute_value(1,AFTER_HEIGHT);
+
 F.fieldBox.height=field_position_size*F.nrOfLines;
 F.fieldBox.width=field_position_size*F.nrOfColumns;
 F.fieldBox.anchorPoint.Y=relative_to_absolute_value( ( 100- absolute_to_relative_value(F.fieldBox.height,AFTER_HEIGHT) )/2,AFTER_HEIGHT);
-F.fieldBox.anchorPoint.X=relative_to_absolute_value( ( 100- absolute_to_relative_value(F.fieldBox.width,AFTER_WIDTH) )/2,AFTER_WIDTH);
+F.fieldBox.anchorPoint.X=relative_to_absolute_value(20,AFTER_WIDTH) + relative_to_absolute_value( ( 80 - absolute_to_relative_value(F.fieldBox.width,AFTER_WIDTH) )/2,AFTER_WIDTH);
 //F.fieldBox.rAnchorPoint.rY=25;
 //F.fieldBox.rHeight=70;
 //F.fieldBox.rWidth=absolute_to_relative_value(relative_to_absolute_value(60,AFTER_HEIGHT),AFTER_WIDTH);
@@ -102,8 +107,8 @@ absolute_rectangle hitBoxF=F.fieldBox;
 field_position_size=hitBoxF.height/F.nrOfLines;
 //F.fieldBox.height=F.fieldBox.width=field_position_size*F.nrOfLines;
 
-clickedPosition.lin=(click.X - hitBoxF.anchorPoint.X)/field_position_size +1;
-clickedPosition.col=(click.Y - hitBoxF.anchorPoint.Y)/field_position_size +1;
+clickedPosition.col=(click.X - hitBoxF.anchorPoint.X)/field_position_size +1;
+clickedPosition.lin=(click.Y - hitBoxF.anchorPoint.Y)/field_position_size +1;
 
 return clickedPosition;
 }
@@ -313,8 +318,8 @@ field_position_size=F.fieldBox.height/F.nrOfLines;
 while ( F.graphicalChanges!=0 )
         {
          currentPosition=pop_stack_list(F.graphicalChanges);
-         screenPosition.X=F.fieldBox.anchorPoint.X+(currentPosition.lin-1)*field_position_size;
-         screenPosition.Y=F.fieldBox.anchorPoint.Y+(currentPosition.col-1)*field_position_size;
+         screenPosition.X=F.fieldBox.anchorPoint.X+(currentPosition.col-1)*field_position_size;
+         screenPosition.Y=F.fieldBox.anchorPoint.Y+(currentPosition.lin-1)*field_position_size;
          draw_field_position(screenPosition,field_position_size,F.backField[currentPosition.lin][currentPosition.col],F.frontField[currentPosition.lin][currentPosition.col]);
         }
 set_active_color(activeCS.mainColor);
@@ -330,7 +335,7 @@ currentX=F.fieldBox.anchorPoint.X;
 currentY=F.fieldBox.anchorPoint.Y;
 for (i=1;i<=F.nrOfLines+1;i++)
      {
-      line(F.fieldBox.anchorPoint.X,currentY,F.fieldBox.anchorPoint.X+F.fieldBox.height,currentY);
+      line(F.fieldBox.anchorPoint.X,currentY,F.fieldBox.anchorPoint.X+F.fieldBox.width,currentY);
       currentY+=field_position_size;
      }
 for (i=1;i<=F.nrOfColumns+1;i++)

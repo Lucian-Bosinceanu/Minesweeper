@@ -30,4 +30,16 @@ struct game_state{
     char difficulty;
 };
 
-game_state init_game_state(char difficultyGS);
+struct custom_game_validity{
+    bool validNrLines;
+    bool validNrColumns;
+    bool validNrMines;
+};
+
+struct high_score{
+    char player_name[35];
+};
+
+game_state init_game_state(char difficultyGS, short int nrLines, short int nrColumns, short int nrMines);
+
+custom_game_validity check_custom_game_validity(short int &nrLines, short int &nrColumns, short int &nrMines);

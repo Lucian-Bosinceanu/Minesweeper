@@ -20,24 +20,26 @@
 1483886468 a:\facultate\ip\proiect - minesweeper\gamescreen.h
 	"gamestate.h"
 
-1484230144 source:a:\facultate\ip\proiect - minesweeper\gamestate.cpp
+1484315012 source:a:\facultate\ip\proiect - minesweeper\gamestate.cpp
 	"gamestate.h"
 
-1484230101 a:\facultate\ip\proiect - minesweeper\gamestate.h
+1484324511 a:\facultate\ip\proiect - minesweeper\gamestate.h
 	"minefield.h"
 
-1484230444 source:a:\facultate\ip\proiect - minesweeper\main.cpp
+1484324242 source:a:\facultate\ip\proiect - minesweeper\main.cpp
 	<fstream>
+	<ctime>
 	"gamescreen.h"
+	"game_time.h"
 	<iostream>
 
-1484222972 a:\facultate\ip\proiect - minesweeper\minefield.h
+1484321420 a:\facultate\ip\proiect - minesweeper\minefield.h
 	<cstdlib>
-	<ctime>
 	"button.h"
 
-1484223126 source:a:\facultate\ip\proiect - minesweeper\minefield.cpp
+1484321419 source:a:\facultate\ip\proiect - minesweeper\minefield.cpp
 	"minefield.h"
+	<ctime>
 
 1484222432 source:a:\facultate\ip\proiect - minesweeper\mouse_click.cpp
 	"mouse_click.h"
@@ -53,7 +55,7 @@
 1484225594 a:\facultate\ip\proiect - minesweeper\relative_coordinates.h
 	<fstream>
 
-1484226323 source:a:\facultate\ip\proiect - minesweeper\relative_coordinates.cpp
+1484310541 source:a:\facultate\ip\proiect - minesweeper\relative_coordinates.cpp
 	"relative_coordinates.h"
 
 1484221659 source:a:\facultate\ip\proiect - minesweeper\color_scheme.cpp
@@ -68,7 +70,13 @@
 	"color_scheme.h"
 	<graphics.h>
 
-1484227107 source:a:\facultate\ip\proiect - minesweeper\text.cpp
+1484319810 source:a:\facultate\ip\proiect - minesweeper\text.cpp
 	<cstring>
 	"text.h"
+
+1484322098 a:\facultate\ip\proiect - minesweeper\game_time.h
+
+1484322895 source:a:\facultate\ip\proiect - minesweeper\game_time.cpp
+	"game_time.h"
+	<cstring>
 

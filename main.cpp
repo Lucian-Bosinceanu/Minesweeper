@@ -1,7 +1,13 @@
 #include <fstream>
+#include <ctime>
 #define MAX_CS 5
 #include "gamescreen.h"
+#include "game_time.h"
 #include <iostream>
+
+#define DELTA_LINES 5
+#define DELTA_COLUMNS 5
+#define DELTA_MINES 5
 
 using namespace std;
 
@@ -20,8 +26,10 @@ button pick_color_scheme1_button, pick_color_scheme2_button, pick_color_scheme3_
 button back_button, reset_button, apply_button;
 button more_lines_button, less_lines_button, more_columns_button, less_columns_button, more_mines_button, less_mines_button;
 
-text resolution_message_text, restart_required_text;
+text resolution_message_text, restart_required_text, click_apply_text;
 text failed_game_text, succeeded_game_text;
+text current_lines_text, current_columns_text, current_mines_text;
+text mines_minus_flags_text, timer_text;
 
 void init_buttons();
 void load_menus();
@@ -37,8 +45,10 @@ void load_options_menu();
 void load_pick_difficulty_menu();
 void load_change_color_scheme_menu();
 void load_change_resolution_menu();
-void load_play_menu(char difficulty);
+void load_play_menu(char difficultyGS, short int nrLines, short int nrColumns, short int nrMines);
 void load_custom_game_menu();
+
+void screen_text_update(custom_game_validity validity, short int nrLines, short int nrColumns, short int nrMines);
 
 int main()
 {
@@ -52,9 +62,16 @@ int main()
 void load_main_menu()
 {
 char click;
+absolute_point siglaAnchorPoint;
+short int height,width;
 click_position mouseClick;
 clear_screen();
 draw_menu(main_menu);
+height=relative_to_absolute_value(40,AFTER_HEIGHT);
+width=2*height;
+siglaAnchorPoint.Y=relative_to_absolute_value(10,AFTER_HEIGHT);
+siglaAnchorPoint.X=(MAXX-width)/2;
+readimagefile("sigla.jpg",siglaAnchorPoint.X,siglaAnchorPoint.Y,siglaAnchorPoint.X+width,siglaAnchorPoint.Y+height);
 while (1)
     {
      click=get_mouseClick_type();
@@ -65,6 +82,7 @@ while (1)
           load_pick_difficulty_menu();
           clear_screen();
           draw_menu(main_menu);
+          readimagefile("sigla.jpg",siglaAnchorPoint.X,siglaAnchorPoint.Y,siglaAnchorPoint.X+width,siglaAnchorPoint.Y+height);
          }
 
      if ( is_button_pressed(options_button,mouseClick) )
@@ -72,6 +90,7 @@ while (1)
          load_options_menu();
          clear_screen();
          draw_menu(main_menu);
+         readimagefile("sigla.jpg",siglaAnchorPoint.X,siglaAnchorPoint.Y,siglaAnchorPoint.X+width,siglaAnchorPoint.Y+height);
         }
 
      if ( is_button_pressed(exit_button,mouseClick) )
@@ -122,21 +141,21 @@ while (1)
 
      if ( is_button_pressed(difficulty_easy_button,mouseClick) )
         {
-         load_play_menu(EASY);
+         load_play_menu(EASY,EASY_LINES,EASY_COLUMNS,EASY_MINES);
          clear_screen();
          draw_menu(pick_difficulty_menu);
         }
 
      if ( is_button_pressed(difficulty_medium_button,mouseClick) )
         {
-         load_play_menu(MEDIUM);
+         load_play_menu(MEDIUM,MEDIUM_LINES,MEDIUM_COLUMNS,MEDIUM_MINES);
          clear_screen();
          draw_menu(pick_difficulty_menu);
         }
 
      if ( is_button_pressed(difficulty_hard_button,mouseClick) )
         {
-         load_play_menu(HARD);
+         load_play_menu(HARD,HARD_LINES,HARD_COLUMNS,HARD_MINES);
          clear_screen();
          draw_menu(pick_difficulty_menu);
         }
@@ -198,7 +217,7 @@ char click;
 char sir[MAX_TEXT];
 char resolution_text[30];
 short int x=0,y=0;
-bool changedRes=false;
+bool changedRes=false, visualUpdate=false;
 click_position mouseClick;
 clear_screen();
 draw_menu(change_resolution_menu);
@@ -213,51 +232,54 @@ while (1)
 
      if (is_button_pressed(res_1920x1080_button, mouseClick))
         {
-         x=1920; y=1080; changedRes=true;
+         x=1920; y=1080; changedRes=true; visualUpdate=false;
         }
 
     if (is_button_pressed(res_1366x768_button, mouseClick))
         {
-         x=1366; y=768; changedRes=true;
+         x=1366; y=768; changedRes=true; visualUpdate=false;
         }
 
     if (is_button_pressed(res_1280x800_button, mouseClick))
         {
-         x=1280; y=800; changedRes=true;
+         x=1280; y=800; changedRes=true; visualUpdate=false;
         }
 
     if (is_button_pressed(res_1440x900_button, mouseClick))
         {
-         x=1440; y=900; changedRes=true;
+         x=1440; y=900; changedRes=true; visualUpdate=false;
         }
 
     if (is_button_pressed(res_1280x1024_button, mouseClick))
         {
-         x=1280; y=1024; changedRes=true;
+         x=1280; y=1024; changedRes=true; visualUpdate=false;
         }
 
     if (is_button_pressed(res_1600x900_button, mouseClick))
         {
-         x=1600; y=900; changedRes=true;
+         x=1600; y=900; changedRes=true; visualUpdate=false;
         }
 
     if (is_button_pressed(res_1024x768_button, mouseClick))
         {
-         x=1024; y=768; changedRes=true;
+         x=1024; y=768; changedRes=true; visualUpdate=false;
         }
 
     if (is_button_pressed(res_800x600_button, mouseClick))
         {
-         x=800; y=600; changedRes=true;
+         x=800; y=600; changedRes=true; visualUpdate=false;
         }
 
-    if (changedRes)
+    if (changedRes && !visualUpdate)
         {
-        //resolution_to_text(x,y,resolution_text);
-        //strcpy(resolution_message_text.charString, strcat(sir,resolution_text));
-        //resolution_message_text.charString[ strlen(resolution_message_text.charString) ]=0;
+        resolution_to_text(x,y,resolution_text);
+        strcpy(sir,resolution_message_text.charString);
+        strcat(resolution_message_text.charString, resolution_text);
         draw_text(resolution_message_text);
         draw_text(restart_required_text);
+        draw_text(click_apply_text);
+        strcpy(resolution_message_text.charString, sir);
+        visualUpdate=true;
         }
 
     if (is_button_pressed(apply_button, mouseClick) && changedRes)
@@ -274,9 +296,12 @@ insert_button_menu(change_resolution_menu,apply_button);
 void load_custom_game_menu()
 {
 char click;
+short int nrLines=20, nrColumns=20, nrMines=40;
 click_position mouseClick;
+custom_game_validity customGameValidity={true,true,true};
 clear_screen();
 draw_menu(custom_game_menu);
+screen_text_update(customGameValidity,nrLines,nrColumns,nrMines);
 while (1)
     {
      click=get_mouseClick_type();
@@ -284,20 +309,96 @@ while (1)
 
      if (is_button_pressed(back_button, mouseClick))
          return;
+
+    if (is_button_pressed(more_lines_button, mouseClick))
+        {
+        nrLines+=DELTA_LINES;
+        customGameValidity=check_custom_game_validity(nrLines,nrColumns,nrMines);
+        nrMines=(nrLines*nrColumns)/10;
+        screen_text_update(customGameValidity,nrLines,nrColumns,nrMines);
+        }
+
+    if ( is_button_pressed(less_lines_button, mouseClick) )
+        {
+         nrLines-=DELTA_LINES;
+         customGameValidity=check_custom_game_validity(nrLines,nrColumns,nrMines);
+         nrMines=(nrLines*nrColumns)/10;
+         screen_text_update(customGameValidity,nrLines,nrColumns,nrMines);
+        }
+
+    if (is_button_pressed(more_columns_button, mouseClick))
+        {
+         nrColumns+=DELTA_COLUMNS;
+         customGameValidity=check_custom_game_validity(nrLines,nrColumns,nrMines);
+         nrMines=(nrLines*nrColumns)/10;
+         screen_text_update(customGameValidity,nrLines,nrColumns,nrMines);
+        }
+
+    if ( is_button_pressed(less_columns_button, mouseClick) )
+        {
+         nrColumns-=DELTA_COLUMNS;
+         customGameValidity=check_custom_game_validity(nrLines,nrColumns,nrMines);
+         nrMines=(nrLines*nrColumns)/10;
+         screen_text_update(customGameValidity,nrLines,nrColumns,nrMines);
+        }
+
+    if (is_button_pressed(more_mines_button, mouseClick))
+        {
+         nrMines+=DELTA_MINES;
+         customGameValidity=check_custom_game_validity(nrLines,nrColumns,nrMines);
+         screen_text_update(customGameValidity,nrLines,nrColumns,nrMines);
+        }
+
+    if ( is_button_pressed(less_mines_button, mouseClick) )
+        {
+         nrMines-=DELTA_MINES;
+         customGameValidity=check_custom_game_validity(nrLines,nrColumns,nrMines);
+         screen_text_update(customGameValidity,nrLines,nrColumns,nrMines);
+        }
+
+    if ( is_button_pressed(apply_button, mouseClick) && customGameValidity.validNrLines && customGameValidity.validNrColumns && customGameValidity.validNrMines )
+        {
+         load_play_menu(CUSTOM,nrLines,nrColumns,nrMines);
+         clear_screen();
+         draw_menu(custom_game_menu);
+         screen_text_update(customGameValidity,nrLines,nrColumns,nrMines);
+        }
     }
 }
 
-void load_play_menu(char difficulty)
+void load_play_menu(char difficultyGS,short int nrLines, short int nrColumns, short int nrMines)
 {
 char click;
 char click_effect;
+bool display_message=true, timerHasStarted=false;
+int secondsPassed;
+relative_rectangle rTextBox;
 field_position clickedFieldPosition;
 play_screen playScreen;
 click_position mouseClick;
-playScreen.gameState=init_game_state(difficulty);
+game_time gameTime;
+time_t now, then;
+
+reset_game_time(gameTime);
+playScreen.gameState=init_game_state(difficultyGS,nrLines,nrColumns,nrMines);
 playScreen.playMenu=play_menu;
 clear_screen();
 draw_play_screen(playScreen);
+
+rTextBox.rAnchorPoint=absolute_to_relative_point(playScreen.gameState.gameField.fieldBox.anchorPoint);
+rTextBox.rAnchorPoint.rY-=5;
+rTextBox.rHeight=5; rTextBox.rWidth=10;
+mines_minus_flags_text=create_text(rTextBox,"88888",LEFT,CENTER);
+
+rTextBox.rAnchorPoint=absolute_to_relative_point(playScreen.gameState.gameField.fieldBox.anchorPoint);
+rTextBox.rAnchorPoint.rY-=10;
+rTextBox.rHeight=5; rTextBox.rWidth=10;
+timer_text=create_text(rTextBox,"00:00",LEFT,CENTER);
+
+strcpy(timer_text.charString, game_time_as_string(gameTime));
+strcpy(mines_minus_flags_text.charString,convert_nr_to_char(nrMines));
+draw_text(mines_minus_flags_text);
+draw_text(timer_text);
 while (1)
     {
 
@@ -306,15 +407,36 @@ while (1)
             click=get_mouseClick_type();
             mouseClick=get_mouseClick_postion(click);
 
+            if (timerHasStarted)
+                {
+                 time(&then);
+                 secondsPassed=(int)(difftime(then,now));
+                 if (secondsPassed>0)
+                     {
+                      add_seconds(gameTime,1);
+                      now=then;
+                      strcpy(timer_text.charString, game_time_as_string(gameTime));
+                      draw_text(timer_text);
+                     }
+                }
+
             if ( is_mine_field_click(playScreen.gameState.gameField,mouseClick) )
                 {
                  clickedFieldPosition=get_field_position(playScreen.gameState.gameField,mouseClick);
                  click_effect=field_click_effect(playScreen.gameState.gameField, clickedFieldPosition,click);
                  if (click_effect!=NOTHING)
                      {
+                     if (!timerHasStarted)
+                         {
+                         localtime(&now);
+                         now=then;
+                         timerHasStarted=true;
+                         }
                      playScreen.gameState.state=solve_click_effect(playScreen.gameState.gameField, clickedFieldPosition, click_effect);
                      //clear_screen();
                      draw_field_graphicalChanges(playScreen.gameState.gameField);
+                     strcpy(mines_minus_flags_text.charString,convert_nr_to_char(nrMines-playScreen.gameState.gameField.nrOfFlags));
+                     draw_text(mines_minus_flags_text);
                      //draw_play_screen(playScreen);
                      }
                 }
@@ -326,10 +448,16 @@ while (1)
 
             if ( is_button_pressed(reset_button,mouseClick) )
                 {
-                 playScreen.gameState=init_game_state(difficulty);
-                 playScreen.playMenu=play_menu;
+                 playScreen.gameState=init_game_state(difficultyGS,nrLines,nrColumns,nrMines);
+                 //playScreen.playMenu=play_menu;
                  clear_screen();
+                 display_message=true;
                  draw_play_screen(playScreen);
+                 strcpy(mines_minus_flags_text.charString,convert_nr_to_char(nrMines));
+                 draw_text(mines_minus_flags_text);
+                 reset_game_time(gameTime); timerHasStarted=false;
+                 strcpy(timer_text.charString, game_time_as_string(gameTime));
+                 draw_text(timer_text);
                 }
 
             if ( is_button_pressed(back_button,mouseClick) )
@@ -339,38 +467,46 @@ while (1)
 
     click=get_mouseClick_type();
     mouseClick=get_mouseClick_postion(click);
-
-    if (playScreen.gameState.state==SOLVED)
-        {
-         //ceva
-         reveal_all(playScreen.gameState.gameField);
-         draw_field_graphicalChanges(playScreen.gameState.gameField);
-         settextstyle(10,HORIZ_DIR,2);
-         setbkcolor(return_rgb_color_code(activeCS.mainColor));
-         set_active_color(activeCS.backgroundColor);
-         moveto(600,50);
-         outtext("SOLVED!");
-        }
-        else
-        if (playScreen.gameState.state==FAILED)
+    if (display_message)
+        {if (playScreen.gameState.state==SOLVED)
             {
-            //altceva
+            //ceva
+            reveal_all(playScreen.gameState.gameField);
+            draw_field_graphicalChanges(playScreen.gameState.gameField);
             settextstyle(10,HORIZ_DIR,2);
-            setbkcolor(return_rgb_color_code(activeCS.mainColor));
-            set_active_color(activeCS.backgroundColor);
-            moveto(600,50);
-            outtext("FAILED!");
+            set_active_color(activeCS.mainColor);
+            draw_text(succeeded_game_text);
+            //moveto(600,50);
+            //outtext("SOLVED!");
             }
-    if ( is_button_pressed(reset_button,mouseClick) )
+            else
+            if (playScreen.gameState.state==FAILED)
                 {
-                 playScreen.gameState=init_game_state(difficulty);
-                 playScreen.playMenu=play_menu;
-                 clear_screen();
-                 draw_play_screen(playScreen);
+                //altceva
+                settextstyle(10,HORIZ_DIR,2);
+                set_active_color( create_color(255,0,0) );
+                draw_text(failed_game_text);
+                //moveto(600,50);
+                //outtext("FAILED!");
                 }
+        display_message=false;
+        }
+    if ( is_button_pressed(reset_button,mouseClick) )
+        {
+         playScreen.gameState=init_game_state(difficultyGS,nrLines,nrColumns,nrMines);
+         //playScreen.playMenu=play_menu;
+         clear_screen();
+         display_message=true;
+         draw_play_screen(playScreen);
+         strcpy(mines_minus_flags_text.charString,convert_nr_to_char(nrMines));
+         draw_text(mines_minus_flags_text);
+         reset_game_time(gameTime); timerHasStarted=false;
+         strcpy(timer_text.charString, game_time_as_string(gameTime));
+         draw_text(timer_text);
+        }
 
-            if ( is_button_pressed(back_button,mouseClick) )
-                return;
+    if ( is_button_pressed(back_button,mouseClick) )
+        return;
     }
 }
 
@@ -390,6 +526,7 @@ init_buttons();
 load_menus();
 load_text();
 clear_screen();
+srand( time(NULL) );
 }
 
 void get_maximum()
@@ -443,6 +580,7 @@ insert_button_menu(play_menu,back_button);
 insert_button_menu(play_menu,reset_button);
 
 insert_button_menu(custom_game_menu,back_button);
+insert_button_menu(custom_game_menu,apply_button);
 insert_button_menu(custom_game_menu,more_lines_button);
 insert_button_menu(custom_game_menu,less_lines_button);
 insert_button_menu(custom_game_menu,more_columns_button);
@@ -530,7 +668,7 @@ buttonR.rAnchorPoint.rX=10; buttonR.rAnchorPoint.rY=10;
 buttonR.rHeight=10; buttonR.rWidth=10;
 back_button=create_button(buttonR,"BACK");
 
-buttonR.rAnchorPoint.rX=10; buttonR.rAnchorPoint.rY=40;
+buttonR.rAnchorPoint.rX=10; buttonR.rAnchorPoint.rY=25;
 buttonR.rHeight=10; buttonR.rWidth=10;
 reset_button=create_button(buttonR,"RESET");
 
@@ -590,17 +728,102 @@ relative_rectangle rTextBox;
 
 rTextBox.rAnchorPoint.rX=33; rTextBox.rAnchorPoint.rY=74;
 rTextBox.rHeight=10; rTextBox.rWidth=67;
-resolution_message_text=create_text(rTextBox,"Resolution has changed.",LEFT,CENTER);
+resolution_message_text=create_text(rTextBox,"Resolution will be set to: ",LEFT,CENTER);
 
-rTextBox.rAnchorPoint.rX=33; rTextBox.rAnchorPoint.rY=80;
+rTextBox.rAnchorPoint.rX=33; rTextBox.rAnchorPoint.rY=81;
 rTextBox.rHeight=10; rTextBox.rWidth=67;
-restart_required_text=create_text(rTextBox,"Restart is required. Click APPLY to exit the game.",LEFT,CENTER);
+restart_required_text=create_text(rTextBox,"Restart is required.         ",LEFT,CENTER);
 
-rTextBox.rAnchorPoint.rX=0; rTextBox.rAnchorPoint.rY=10;
-rTextBox.rHeight=10; rTextBox.rWidth=80;
-succeeded_game_text=create_text(rTextBox,"Success! You won the game! Click RESET to start a new game.",CENTER,CENTER);
+rTextBox.rAnchorPoint.rX=33; rTextBox.rAnchorPoint.rY=88;
+rTextBox.rHeight=10; rTextBox.rWidth=67;
+click_apply_text=create_text(rTextBox,"Click APPLY to exit the game.",LEFT,CENTER);
 
-rTextBox.rAnchorPoint.rX=0; rTextBox.rAnchorPoint.rY=10;
-rTextBox.rHeight=10; rTextBox.rWidth=0;
-succeeded_game_text=create_text(rTextBox,"Failed! Click RESET to retry.",CENTER,CENTER);
+rTextBox.rAnchorPoint.rX=10; rTextBox.rAnchorPoint.rY=40;
+rTextBox.rHeight=10; rTextBox.rWidth=10;
+succeeded_game_text=create_text(rTextBox,"SUCCES!",LEFT,CENTER);
+
+rTextBox.rAnchorPoint.rX=10; rTextBox.rAnchorPoint.rY=40;
+rTextBox.rHeight=10; rTextBox.rWidth=10;
+failed_game_text=create_text(rTextBox,"FAILED!",LEFT,CENTER);
+
+rTextBox.rAnchorPoint.rX=33; rTextBox.rAnchorPoint.rY=64;
+rTextBox.rHeight=10; rTextBox.rWidth=67;
+current_lines_text=create_text(rTextBox,"Lines: ",LEFT,CENTER);
+
+rTextBox.rAnchorPoint.rX=33; rTextBox.rAnchorPoint.rY=70;
+rTextBox.rHeight=10; rTextBox.rWidth=67;
+current_columns_text=create_text(rTextBox,"Columns: ",LEFT,CENTER);
+
+rTextBox.rAnchorPoint.rX=33; rTextBox.rAnchorPoint.rY=76;
+rTextBox.rHeight=10; rTextBox.rWidth=67;
+current_mines_text=create_text(rTextBox,"Mines: ",LEFT,CENTER);
+
+rTextBox.rAnchorPoint.rX=10; rTextBox.rAnchorPoint.rY=40;
+rTextBox.rHeight=5; rTextBox.rWidth=10;
+mines_minus_flags_text=create_text(rTextBox,"88888",LEFT,CENTER);
+
+rTextBox.rAnchorPoint.rX=33; rTextBox.rAnchorPoint.rY=45;
+rTextBox.rHeight=10; rTextBox.rWidth=10;
+timer_text=create_text(rTextBox,"00:00",LEFT,CENTER);
+
+}
+
+void screen_text_update(custom_game_validity validity, short int nrLines, short int nrColumns, short int nrMines)
+{
+color_scheme activeCS;
+rgb_color auxMainColor;
+char sir[100];
+activeCS=load_current_color_scheme();
+auxMainColor=activeCS.mainColor;
+setbkcolor( return_rgb_color_code(activeCS.backgroundColor) );
+
+
+strcpy(sir,current_lines_text.charString);
+strcat(current_lines_text.charString,convert_nr_to_char(nrLines));
+if (validity.validNrLines)
+    {
+    setcolor( return_rgb_color_code(activeCS.mainColor) );
+    draw_text(current_lines_text);
+    }
+    else
+    {
+    setcolor(RED);
+    activeCS.mainColor=create_color(255,0,0);
+    draw_text(current_lines_text);
+    activeCS.mainColor=auxMainColor;
+    }
+strcpy(current_lines_text.charString,sir);
+
+strcpy(sir,current_columns_text.charString);
+strcat(current_columns_text.charString,convert_nr_to_char(nrColumns));
+if (validity.validNrColumns)
+    {
+    setcolor( return_rgb_color_code(activeCS.mainColor) );
+    draw_text(current_columns_text);
+    }
+    else
+    {
+    setcolor(RED);
+    activeCS.mainColor=create_color(255,0,0);
+    draw_text(current_columns_text);
+    activeCS.mainColor=auxMainColor;
+    }
+strcpy(current_columns_text.charString,sir);
+
+strcpy(sir,current_mines_text.charString);
+strcat(current_mines_text.charString,convert_nr_to_char(nrMines));
+if (validity.validNrMines)
+    {
+    setcolor( return_rgb_color_code(activeCS.mainColor) );
+    draw_text(current_mines_text);
+    }
+    else
+    {
+    setcolor(RED);
+    activeCS.mainColor=create_color(255,0,0);
+    draw_text(current_mines_text);
+    activeCS.mainColor=auxMainColor;
+    }
+strcpy(current_mines_text.charString,sir);
+
 }
