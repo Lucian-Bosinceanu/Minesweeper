@@ -8,8 +8,8 @@ color_scheme return_default_color_scheme()
 color_scheme CS;
 
 CS.backgroundColor=create_color(255,255,255); //alb
-CS.mainColor=create_color(40,100,60); //verde
-CS.secondaryColor=create_color(0,0,0); //negru
+CS.mainColor=create_color(10,15,13);
+CS.secondaryColor=create_color(238,66,102);
 CS.tertiaryColor=create_color(196,196,196); //gri
 
 return CS;
@@ -80,9 +80,9 @@ fin>>index;
 if (index==1)
     return return_default_color_scheme();
 if (index==2)
-    return create_color_scheme( create_color(255,255,255), create_color(76,99,200), create_color(247,133,31), create_color(196,196,196) );
+    return create_color_scheme( create_color(255,255,255), create_color(64,64,64), create_color(33,161,121), create_color(196,196,196) );
 if (index==3)
-    return create_color_scheme( create_color(255,255,255), create_color(245,40,40), create_color(0,178,51), create_color(196,196,196) );
+    return create_color_scheme( create_color(255,255,255), create_color(28,49,68), create_color(126,161,107), create_color(196,196,196) );
 
 return return_default_color_scheme();
 }

@@ -78,28 +78,28 @@ fin.close();
 return rP;
 }
 
-absolute_rectangle relative_to_absolute_rectangle(relative_rectangle rRect)
+absolute_rectangle relative_to_absolute_rectangle(relative_rectangle rRectangle)
 {
-absolute_rectangle rect;
+absolute_rectangle rectangle;
 
-rect.anchorPoint=relative_to_absolute_point(rRect.rAnchorPoint);
-rect.width=relative_to_absolute_value(rRect.rWidth, AFTER_WIDTH);
-rect.height=relative_to_absolute_value(rRect.rHeight, AFTER_HEIGHT);
+rectangle.anchorPoint=relative_to_absolute_point(rRectangle.rAnchorPoint);
+rectangle.width=relative_to_absolute_value(rRectangle.rWidth, AFTER_WIDTH);
+rectangle.height=relative_to_absolute_value(rRectangle.rHeight, AFTER_HEIGHT);
 
-return rect;
+return rectangle;
 }
 
 
 
-relative_rectangle absolute_to_relative_rectangle(absolute_rectangle rect)
+relative_rectangle absolute_to_relative_rectangle(absolute_rectangle rectangle)
 {
-relative_rectangle rRect;
+relative_rectangle rRectangle;
 
-rRect.rAnchorPoint=absolute_to_relative_point(rect.anchorPoint);
-rRect.rHeight=absolute_to_relative_value(rect.height, AFTER_HEIGHT);
-rRect.rWidth=absolute_to_relative_value(rect.width, AFTER_WIDTH);
+rRectangle.rAnchorPoint=absolute_to_relative_point(rectangle.anchorPoint);
+rRectangle.rHeight=absolute_to_relative_value(rectangle.height, AFTER_HEIGHT);
+rRectangle.rWidth=absolute_to_relative_value(rectangle.width, AFTER_WIDTH);
 
-return rRect;
+return rRectangle;
 }
 
 void set_new_screen_resolution(short int width, short int height)

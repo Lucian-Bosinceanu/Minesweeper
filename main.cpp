@@ -2,7 +2,6 @@
 #include <ctime>
 #define MAX_CS 5
 #include "gamescreen.h"
-#include "game_time.h"
 #include <iostream>
 
 #define DELTA_LINES 5
@@ -12,6 +11,8 @@
 using namespace std;
 
 short int MAXX, MAXY;
+
+highscore highScore;
 
 color_scheme activeCS;
 
@@ -71,7 +72,7 @@ height=relative_to_absolute_value(40,AFTER_HEIGHT);
 width=2*height;
 siglaAnchorPoint.Y=relative_to_absolute_value(10,AFTER_HEIGHT);
 siglaAnchorPoint.X=(MAXX-width)/2;
-readimagefile("sigla.jpg",siglaAnchorPoint.X,siglaAnchorPoint.Y,siglaAnchorPoint.X+width,siglaAnchorPoint.Y+height);
+readimagefile("./images/sigla.jpg",siglaAnchorPoint.X,siglaAnchorPoint.Y,siglaAnchorPoint.X+width,siglaAnchorPoint.Y+height);
 while (1)
     {
      click=get_mouseClick_type();
@@ -82,7 +83,7 @@ while (1)
           load_pick_difficulty_menu();
           clear_screen();
           draw_menu(main_menu);
-          readimagefile("sigla.jpg",siglaAnchorPoint.X,siglaAnchorPoint.Y,siglaAnchorPoint.X+width,siglaAnchorPoint.Y+height);
+          readimagefile("./images/sigla.jpg",siglaAnchorPoint.X,siglaAnchorPoint.Y,siglaAnchorPoint.X+width,siglaAnchorPoint.Y+height);
          }
 
      if ( is_button_pressed(options_button,mouseClick) )
@@ -90,7 +91,7 @@ while (1)
          load_options_menu();
          clear_screen();
          draw_menu(main_menu);
-         readimagefile("sigla.jpg",siglaAnchorPoint.X,siglaAnchorPoint.Y,siglaAnchorPoint.X+width,siglaAnchorPoint.Y+height);
+         readimagefile("./images/sigla.jpg",siglaAnchorPoint.X,siglaAnchorPoint.Y,siglaAnchorPoint.X+width,siglaAnchorPoint.Y+height);
         }
 
      if ( is_button_pressed(exit_button,mouseClick) )
@@ -390,15 +391,18 @@ rTextBox.rAnchorPoint.rY-=5;
 rTextBox.rHeight=5; rTextBox.rWidth=10;
 mines_minus_flags_text=create_text(rTextBox,"88888",LEFT,CENTER);
 
-rTextBox.rAnchorPoint=absolute_to_relative_point(playScreen.gameState.gameField.fieldBox.anchorPoint);
-rTextBox.rAnchorPoint.rY-=10;
-rTextBox.rHeight=5; rTextBox.rWidth=10;
-timer_text=create_text(rTextBox,"00:00",LEFT,CENTER);
+if (difficultyGS!=CUSTOM)
+    {
+    rTextBox.rAnchorPoint=absolute_to_relative_point(playScreen.gameState.gameField.fieldBox.anchorPoint);
+    rTextBox.rAnchorPoint.rY-=10;
+    rTextBox.rHeight=5; rTextBox.rWidth=10;
+    timer_text=create_text(rTextBox,"00:00",LEFT,CENTER);
+    strcpy(timer_text.charString, game_time_as_string(gameTime));
+    draw_text(timer_text);
+    }
 
-strcpy(timer_text.charString, game_time_as_string(gameTime));
 strcpy(mines_minus_flags_text.charString,convert_nr_to_char(nrMines));
 draw_text(mines_minus_flags_text);
-draw_text(timer_text);
 while (1)
     {
 
@@ -407,7 +411,7 @@ while (1)
             click=get_mouseClick_type();
             mouseClick=get_mouseClick_postion(click);
 
-            if (timerHasStarted)
+            if (timerHasStarted && difficultyGS!=CUSTOM)
                 {
                  time(&then);
                  secondsPassed=(int)(difftime(then,now));
@@ -426,7 +430,7 @@ while (1)
                  click_effect=field_click_effect(playScreen.gameState.gameField, clickedFieldPosition,click);
                  if (click_effect!=NOTHING)
                      {
-                     if (!timerHasStarted)
+                     if (!timerHasStarted && difficultyGS!=CUSTOM)
                          {
                          localtime(&now);
                          now=then;
@@ -455,9 +459,12 @@ while (1)
                  draw_play_screen(playScreen);
                  strcpy(mines_minus_flags_text.charString,convert_nr_to_char(nrMines));
                  draw_text(mines_minus_flags_text);
-                 reset_game_time(gameTime); timerHasStarted=false;
-                 strcpy(timer_text.charString, game_time_as_string(gameTime));
-                 draw_text(timer_text);
+                 if (difficultyGS!=CUSTOM)
+                     {
+                     reset_game_time(gameTime); timerHasStarted=false;
+                     strcpy(timer_text.charString, game_time_as_string(gameTime));
+                     draw_text(timer_text);
+                     }
                 }
 
             if ( is_button_pressed(back_button,mouseClick) )
@@ -476,6 +483,9 @@ while (1)
             settextstyle(10,HORIZ_DIR,2);
             set_active_color(activeCS.mainColor);
             draw_text(succeeded_game_text);
+            if (difficultyGS!=CUSTOM)
+                if ( check_if_is_a_highscore(highScore,difficultyGS,gameTime) )
+                    add_highscore_entry(highScore,difficultyGS,gameTime);
             //moveto(600,50);
             //outtext("SOLVED!");
             }
@@ -500,9 +510,12 @@ while (1)
          draw_play_screen(playScreen);
          strcpy(mines_minus_flags_text.charString,convert_nr_to_char(nrMines));
          draw_text(mines_minus_flags_text);
-         reset_game_time(gameTime); timerHasStarted=false;
-         strcpy(timer_text.charString, game_time_as_string(gameTime));
-         draw_text(timer_text);
+         if (difficultyGS!=CUSTOM)
+             {
+             reset_game_time(gameTime); timerHasStarted=false;
+             strcpy(timer_text.charString, game_time_as_string(gameTime));
+             draw_text(timer_text);
+             }
         }
 
     if ( is_button_pressed(back_button,mouseClick) )
@@ -527,6 +540,7 @@ load_menus();
 load_text();
 clear_screen();
 srand( time(NULL) );
+load_highscore(highScore);
 }
 
 void get_maximum()
@@ -598,6 +612,7 @@ delete_buttons_menu(change_color_scheme_menu);
 delete_buttons_menu(pick_difficulty_menu);
 delete_buttons_menu(play_menu);
 delete_buttons_menu(custom_game_menu);
+save_highscore(highScore);
 }
 
 void init_buttons()

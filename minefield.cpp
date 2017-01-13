@@ -359,21 +359,21 @@ if (frontfieldCODE==REVEALED)
          bar(anchorPoint.X,anchorPoint.Y,anchorPoint.X+length,anchorPoint.Y+length);
         }
      if (backfieldCODE==1)
-         readimagefile("1.jpg",anchorPoint.X,anchorPoint.Y,anchorPoint.X+length,anchorPoint.Y+length);
+         readimagefile("./images/1.jpg",anchorPoint.X,anchorPoint.Y,anchorPoint.X+length,anchorPoint.Y+length);
      if (backfieldCODE==2)
-         readimagefile("2.jpg",anchorPoint.X,anchorPoint.Y,anchorPoint.X+length,anchorPoint.Y+length);
+         readimagefile("./images/2.jpg",anchorPoint.X,anchorPoint.Y,anchorPoint.X+length,anchorPoint.Y+length);
      if (backfieldCODE==3)
-         readimagefile("3.jpg",anchorPoint.X,anchorPoint.Y,anchorPoint.X+length,anchorPoint.Y+length);
+         readimagefile("./images/3.jpg",anchorPoint.X,anchorPoint.Y,anchorPoint.X+length,anchorPoint.Y+length);
      if (backfieldCODE==4)
-         readimagefile("4.jpg",anchorPoint.X,anchorPoint.Y,anchorPoint.X+length,anchorPoint.Y+length);
+         readimagefile("./images/4.jpg",anchorPoint.X,anchorPoint.Y,anchorPoint.X+length,anchorPoint.Y+length);
      if (backfieldCODE==5)
-          readimagefile("5.jpg",anchorPoint.X,anchorPoint.Y,anchorPoint.X+length,anchorPoint.Y+length);
+          readimagefile("./images/5.jpg",anchorPoint.X,anchorPoint.Y,anchorPoint.X+length,anchorPoint.Y+length);
      if (backfieldCODE==6)
-          readimagefile("6.jpg",anchorPoint.X,anchorPoint.Y,anchorPoint.X+length,anchorPoint.Y+length);
+          readimagefile("./images/6.jpg",anchorPoint.X,anchorPoint.Y,anchorPoint.X+length,anchorPoint.Y+length);
      if (backfieldCODE==7)
-          readimagefile("7.jpg",anchorPoint.X,anchorPoint.Y,anchorPoint.X+length,anchorPoint.Y+length);
+          readimagefile("./images/7.jpg",anchorPoint.X,anchorPoint.Y,anchorPoint.X+length,anchorPoint.Y+length);
      if (backfieldCODE==8)
-          readimagefile("8.jpg",anchorPoint.X,anchorPoint.Y,anchorPoint.X+length,anchorPoint.Y+length);
+          readimagefile("./images/8.jpg",anchorPoint.X,anchorPoint.Y,anchorPoint.X+length,anchorPoint.Y+length);
     }
     else
     {
@@ -383,13 +383,13 @@ if (frontfieldCODE==REVEALED)
      if (frontfieldCODE==HIDDEN)
          return;
      if (frontfieldCODE==FLAGGED)
-         readimagefile("flag.jpg",anchorPoint.X,anchorPoint.Y,anchorPoint.X+length,anchorPoint.Y+length);
+         readimagefile("./images/flag.jpg",anchorPoint.X,anchorPoint.Y,anchorPoint.X+length,anchorPoint.Y+length);
      if (frontfieldCODE==REVEALED_MINE)
-         readimagefile("mine.jpg",anchorPoint.X,anchorPoint.Y,anchorPoint.X+length,anchorPoint.Y+length);
+         readimagefile("./images/mine.jpg",anchorPoint.X,anchorPoint.Y,anchorPoint.X+length,anchorPoint.Y+length);
      if (frontfieldCODE==FALSE_FLAG)
-         readimagefile("false_flag.jpg",anchorPoint.X,anchorPoint.Y,anchorPoint.X+length,anchorPoint.Y+length);
+         readimagefile("./images/false_flag.jpg",anchorPoint.X,anchorPoint.Y,anchorPoint.X+length,anchorPoint.Y+length);
      if (frontfieldCODE==EXPLODED_MINE)
-         readimagefile("exploded_mine.jpg",anchorPoint.X,anchorPoint.Y,anchorPoint.X+length,anchorPoint.Y+length);
+         readimagefile("./images/exploded_mine.jpg",anchorPoint.X,anchorPoint.Y,anchorPoint.X+length,anchorPoint.Y+length);
     }
 }
 

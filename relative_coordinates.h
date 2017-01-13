@@ -29,8 +29,8 @@ char absolute_to_relative_value(short int position, char dimension_code);
 absolute_point relative_to_absolute_point(relative_point rP);
 relative_point absolute_to_relative_point(absolute_point P);
 
-absolute_rectangle relative_to_absolute_rectangle(relative_rectangle rRect);
-relative_rectangle absolute_to_relative_rectangle(absolute_rectangle rect);
+absolute_rectangle relative_to_absolute_rectangle(relative_rectangle rRectangle);
+relative_rectangle absolute_to_relative_rectangle(absolute_rectangle rectangle);
 
 void set_new_screen_resolution(short int width, short int height);
 void resolution_to_text(short int width, short int height, char sir[]);
